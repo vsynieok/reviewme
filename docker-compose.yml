@@ -1,0 +1,41 @@
+version: '2'
+services:
+  ui:
+    build: './reviewme-ui'
+    container_name: reviewme-ui
+    ports:
+      - '8080:80'
+    environment:
+      - VUE_APP_API_BASE=http://reviewme-api:8081
+  api:
+    build: './reviewme-api'
+    container_name: reviewme-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8081
+      - ConnectionStrings__Default=Server=reviewme-db;Initial Catalog=ReviewMeDB;User Id=sa;Password=k7Z+h27t;Integrated Security=False;Trusted_Connection=false
+    ports:
+      - '8081:8081'
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: mcr.microsoft.com/mssql/server:latest-ubuntu
+    restart: always
+    container_name: reviewme-db
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=k7Z+h27t
+      - MSSQL_PID=Express
+    volumes:
+      - dbvolume:/var/opt/mssql
+    ports:
+      - 1433:1433
+    healthcheck:
+      test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P k7Z+h27t -Q "SELECT 1" -b -o /dev/null
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+volumes:
+  dbvolume:

@@ -1,0 +1,6 @@
+[submodule "reviewme-api"]
+	path = reviewme-api
+	url = https://github.com/vsynieok/reviewme-api
+[submodule "reviewme-ui"]
+	path = reviewme-ui
+	url = https://github.com/vsynieok/reviewme-ui
